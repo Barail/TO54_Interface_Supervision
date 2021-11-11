@@ -9,3 +9,10 @@ __pycache__/
 *.so
 
 
+/.idea/.gitignore
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/TO54_Interface_Supervision.iml
+/.idea/vcs.xml
+/apps/weewx.db
