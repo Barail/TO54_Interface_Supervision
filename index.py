@@ -19,7 +19,7 @@ app.layout = html.Div([
             children=[
                 dbc.NavItem(dbc.NavLink("Accueil", href='../')),
                 dbc.NavItem(dbc.NavLink("PV", href='/apps/pv')),
-                dbc.NavItem(dbc.NavLink("Batteries", href='/apps/batteries')),
+                dbc.NavItem(dbc.NavLink("Batteries", href='/apps/batterie')),
                 dbc.NavItem(dbc.NavLink("Station Meteo", href='/apps/station_meteo')),
             ],
             brand="Interface de Supervision - Batiment F",
