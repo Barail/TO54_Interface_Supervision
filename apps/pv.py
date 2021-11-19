@@ -52,7 +52,7 @@ pv_layout = html.Div(
                             [
                                 html.H1(
                                     children='Panneau photovoltaïque',
-                                    className="display-3 text-center text-white",
+                                    className="display-4 text-center text-white",
                                 ),
                                 html.Div(
                                     children='Donnees de la puissance géneré par les panneaux',

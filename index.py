@@ -36,7 +36,7 @@ welcome_layout = html.Div([
     # header
     dbc.Row([
         dbc.Col([html.Div(id='pv_content', children=[pv.pv_layout])],md=6),
-        dbc.Col([html.Div(id='station_meteo_content', children=[station_meteo.meteo_layout])],md=6),
+        dbc.Col([html.Div(id='station_meteo_content', children=[station_meteo.welcome_meteo_layout])],md=6),
     ]),
     dbc.Row([
         dbc.Col([html.Div(id='batteries_content', children=[])],md=12)
@@ -46,14 +46,14 @@ welcome_layout = html.Div([
 welcome_layout2 = dfx.Grid(id='grid', fluid=True, children=[
         dfx.Row(children=[
             dfx.Col(xs=20, lg=5, children=[
-                html.Div(id='station_meteo_content', children=[station_meteo.meteo_layout])
+                html.Div(id='station_meteo_content', children=[station_meteo.welcome_meteo_layout])
             ]),
             dfx.Col(xs=20, lg=5, children=[
                 html.Div(id='batteries_content', children=[pv.pv_layout])
             ])
         ]),
         dfx.Row(id='row', children=[
-            dfx.Col(id='col', xs=20, lg=5, children=html.Div(id='station_meteo_content', children=[station_meteo.meteo_layout])),
+            dfx.Col(id='col', xs=20, lg=5, children=html.Div(id='station_meteo_content', children=[station_meteo.welcome_meteo_layout])),
             dfx.Col(xs=20, lg=5, children=html.Div(id='electrolyseur_content', children=[pv.pv_layout]))
         ])
     ])

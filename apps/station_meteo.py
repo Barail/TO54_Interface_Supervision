@@ -26,32 +26,38 @@ theme = {
     'secondary': '#6E6E6E',
 }
 
-card_gauge = dbc.Card([
-    html.Div([
-            dbc.Container(
+card_gauge = html.Div([
+        dbc.Container(
                 [
                     dbc.Col([
-                        dbc.Row(daq.Gauge(id="daq_temp", size=200, min=0, max=110, label="Température")),
-                        dbc.Row(daq.LEDDisplay(id='temp_led',label="",value=0,color=theme['secondary'],className='dark-theme-control ml-5 p-3')),
+                            html.Div([
+                                dbc.Row(daq.Gauge(id="daq_temp", size=100, min=0, max=110, label="Température"),className='ml-5 p-3 pb-2'),
+                                dbc.Row(daq.LEDDisplay(id='temp_led',label="",value=0,color=theme['secondary'],className='dark-theme-control ml-5 pb-5')),
+                            ],className="row justify-content-center",),
                     ]),
                     dbc.Col([
-                        dbc.Row(daq.Gauge(id="daq_pression", size=200, min=0, max=10, value=6, label="Pression")),
-                        dbc.Row(daq.LEDDisplay(id='pression_led',label="",value=0,color=theme['secondary'],className='dark-theme-control ml-5 p-3')),
+                        html.Div([
+                            dbc.Row(daq.Gauge(id="daq_pression", size=100, min=0, max=10, value=6, label="Pression"),className='ml-5 p-3 pb-2'),
+                            dbc.Row(daq.LEDDisplay(id='pression_led',label="",value=0,color=theme['secondary'],className='dark-theme-control ml-5 pb-5')),
+                        ], className="row justify-content-center", ),
                     ]),
                     dbc.Col([
-                        dbc.Row(daq.Gauge(id="daq_humi", size=200, min=0, max=10, value=6, label="Humidité")),
-                        dbc.Row(daq.LEDDisplay(id='humi_led', label="", value=0, color=theme['secondary'],
-                                               className='dark-theme-control ml-5 p-3')),
+                        html.Div([
+                            dbc.Row(daq.Gauge(id="daq_humi", size=100, min=0, max=10, value=6, label="Humidité"),className='ml-5 p-3 pb-2'),
+                            dbc.Row(daq.LEDDisplay(id='humi_led', label="", value=0, color=theme['secondary'],className='dark-theme-control ml-5 pb-5')),
+                        ], className="row justify-content-center", ),
                     ]),
                     dbc.Col([
-                        dbc.Row(daq.Gauge(id="daq_vent", size=200, min=0, max=10, value=6, label="Vent (km/h)")),
-                        dbc.Row(daq.LEDDisplay(id='vent_led', label="", value=0, color=theme['secondary'],
-                                               className='dark-theme-control ml-5 p-3')),
+                        html.Div([
+                            dbc.Row(daq.Gauge(id="daq_vent", size=100, min=0, max=10, value=6, label="Vent (km/h)"),className='ml-5 p-3 pb-2'),
+                            dbc.Row(daq.LEDDisplay(id='vent_led', label="", value=0, color=theme['secondary'],className='dark-theme-control ml-5 pb-5')),
+                        ], className="row justify-content-center", ),
                     ]),
                     dbc.Col([
-                        dbc.Row(daq.Gauge(id="daq_vent2", size=200, min=0, max=10, value=6, label="Vent (km/h)")),
-                        dbc.Row(daq.LEDDisplay(id='vent2_led', label="", value=0, color=theme['secondary'],
-                                               className='dark-theme-control ml-5 p-3')),
+                        html.Div([
+                            dbc.Row(daq.Gauge(id="daq_vent2", size=100, min=0, max=10, value=6, label="Vent (km/h)"),className='ml-5 p-3 pb-2 h-100'),
+                            dbc.Row(daq.LEDDisplay(id='vent2_led', label="", value=0, color=theme['secondary'],className='dark-theme-control ml-5 pb-5 h-100')),
+                        ], className="row justify-content-center", ),
                     ]),
                     dcc.Interval(id="data_update_temp", disabled=False, interval=3000, n_intervals=0),
                     dcc.Interval(id="data_update_pression", disabled=False, interval=1800000, n_intervals=0),
@@ -59,13 +65,12 @@ card_gauge = dbc.Card([
                     dcc.Interval(id="data_update_vent", disabled=False, interval=1800000, n_intervals=0),
                 ],
                 fluid=True,
-                className="row justify-content-center pt-5 mt-5",
+                className="row justify-content-center  h-100 pt-5 pb-5 mt-5 ml-2 border border-2 rounded rounded-3 border-dark",
             ),
         ]
     ),
-], style={'height':'50vh', 'marginLeft':'10px', 'marginTop':'20px'}),
 
-export_meteo_layout = dbc.Card([
+card_export_meteo_layout = dbc.Card([
             dbc.Container(
                 [
                     html.Div(
@@ -120,10 +125,10 @@ export_meteo_layout = dbc.Card([
     ], style={'height':'25vh', 'marginTop':'25px', 'marginLeft':'10px'}
 )
 
-card_map = dbc.Card([
+card_map = html.Div([
     dl.Map([dl.TileLayer(), dl.LocateControl(options={'locateOptions': {'enableHighAccuracy': True}}, startDirectly=True)],
-    id="map", style={'width': '100%', 'height': '50vh', 'margin': "auto", "display": "block"}),
-], style={'height':'50vh', 'marginRight':'10px', 'marginTop':'20px'})
+    id="map", style={'width': '90%', 'height': '45vh', "display": "block"}),
+], className="row justify-content-center mt-5 mr-2 border border-2 rounded rounded-3 border-dark",)
             
 card_prevision = dbc.Card([
 ], style={'height':'25vh', 'marginTop':'25px', 'marginLeft':'10px'})
@@ -143,10 +148,41 @@ meteo_layout = html.Div([
     ),
     dbc.Row(
         [
-            dbc.Col(export_meteo_layout, width=8),
+            dbc.Col(card_export_meteo_layout, width=8),
             dbc.Col(card_infomap, width=4),
         ]
     )
+])
+
+welcome_meteo_layout = html.Div([
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.Div(
+                            [
+                                html.H2(
+                                    children='STATION METEO',
+                                    className="display-4 text-center text-white",
+                                ),
+                                html.Div(
+                                    children='Donnees de la puissance géneré par les panneaux',
+                                    className="display-5 text-center text-white",
+                                ),
+                            ],
+                            className="bg-info h-100 mr-3 ml-3 mt-3 p-5 border border-5 rounded rounded-3 border-dark ",
+                        ),
+                    ],
+                    md = 12,
+                ),
+            ],
+        ),
+    dbc.Row(
+        [
+            dbc.Col(card_gauge, width=8),
+            dbc.Col(card_map, width=4)
+        ]
+    ),
 ])
 
 @app.callback(
