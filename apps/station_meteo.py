@@ -3,6 +3,7 @@ from dash import html
 from dash import dcc
 import dash_daq as daq
 import dash_leaflet as dl
+import dash_leaflet.express as dlx
 import dash_bootstrap_components as dbc
 import sqlite3
 import pandas as pd
@@ -26,8 +27,11 @@ theme = {
     'secondary': '#6E6E6E',
 }
 
-card_gauge = html.Div([
-        dbc.Container(
+fc_lab = dlx.dicts_to_geojson([dict(lat=47.642884, lon=6.845676)])
+
+card_gauge = dbc.Card([
+    html.Div([
+            dbc.Container(
                 [
                     dbc.Col([
                             html.Div([
@@ -122,21 +126,30 @@ card_export_meteo_layout = dbc.Card([
                 fluid=True,
                 className="row justify-content-center pt-5",
             ),
-    ], style={'height':'25vh', 'marginTop':'25px', 'marginLeft':'10px'}
+    ], style={'height':'30vh', 'marginTop':'25px', 'marginLeft':'10px'}
 )
 
-card_map = html.Div([
-    dl.Map([dl.TileLayer(), dl.LocateControl(options={'locateOptions': {'enableHighAccuracy': True}}, startDirectly=True)],
-    id="map", style={'width': '90%', 'height': '45vh', "display": "block"}),
-], className="row justify-content-center mt-5 mr-2 border border-2 rounded rounded-3 border-dark",)
-            
-card_prevision = dbc.Card([
-], style={'height':'25vh', 'marginTop':'25px', 'marginLeft':'10px'})
+card_map = dbc.Card([
+    dl.Map([dl.TileLayer(),
+            dl.LocateControl(id="parametre", options={'locateOptions': {'enableHighAccuracy': True}}, startDirectly=True),
+            dl.GeoJSON(data=fc_lab)],
+    id="map", zoom=10, style={'width': '100%', 'height': '50vh', 'margin': "auto", "display": "block"}),
+], style={'height':'50vh', 'marginRight':'10px', 'marginTop':'20px'})
 
 card_infomap = dbc.Card([
     html.H4("Informations géographiques", className='mt-3'),
-    html.Div(id="text")
-], style={'height':'25vh', 'marginTop':'25px', 'marginRight':'10px', 'textAlign':'center'})
+    html.Div(html.H1('Latitude : 47.642884 Longitude : 6.845676')),
+    html.Div([
+        html.Div([
+                dbc.Row(html.Img(src=app.get_asset_url('rain.png'), style={'height':'10vh', 'width':'10vh'})),
+                dbc.Row(daq.LEDDisplay(id='rain_led', label="taux de précipitation", value=0, color=theme['secondary'])),
+        ], className='four columns'),
+        html.Div([
+                dbc.Row(html.Img(src=app.get_asset_url('soleil.png'), style={'height':'10vh', 'width':'10vh'})),
+                dbc.Row(daq.LEDDisplay(id='sun_led', label="taux d'ensoleillement", value=0, color=theme['secondary'])),
+        ], className='four columns', style={"margin-left": "20px"}),
+    ], className='row align-self-center'),
+], style={'height':'30vh', 'marginTop':'25px', 'marginRight':'10px', 'textAlign':'center'})
                     
 
 meteo_layout = html.Div([
@@ -216,15 +229,6 @@ def export_data_to_csv(start_date, end_date, check_list_value, n_clicks):
         return dcc.send_data_frame(dff.to_csv, filename=export_data_file_name, index=False), 'data successfully saved'
     raise PreventUpdate
 
-                            
-@app.callback(
-    Output("text", "children"),
-    Input("map", "location_lat_lon_acc"),
-    prevent_initial_call=True
-)
-def update_location(location):
-    return "Latitude : {} Longitude : {}".format(location[0], location[1])    
-
 @app.callback(
     Output("temp_led", "value"),
     Output("daq_temp", "value"),
@@ -234,6 +238,8 @@ def update_location(location):
     Output("daq_humi", "value"),
     Output("vent_led", "value"),
     Output("daq_vent", "value"),
+    Output("rain_led", "value"),
+    Output("sun_led", "value"),
     Input("data_update_temp", "n_intervals")
 )
 def gauge_temp(interval):
@@ -241,7 +247,7 @@ def gauge_temp(interval):
         raise PreventUpdate
     else:
         timestamp = 1630533600
-        statement = f"SELECT outTemp,pressure,outHumidity,windSpeed FROM archive WHERE dateTime >= {timestamp}"
+        statement = f"SELECT outTemp,pressure,outHumidity,windSpeed,rainRate,radiation FROM archive WHERE dateTime >= {timestamp}"
         #statement = f'SELECT outTemp FROM archive'
         df_temp = pd.read_sql_query(statement, conn_db)
         # print(df_temp)
@@ -250,5 +256,9 @@ def gauge_temp(interval):
         pression = round(float(df_temp['pressure'][0]),1)
         humidity = round(float(df_temp['outHumidity'][0]),1)
         vent = round(float(df_temp['windSpeed'][0]),1)
-        return temp,temp,pression,pression,humidity,humidity,vent,vent
+        pluie = round(float(df_temp['rainRate'][0]),1)
+        ensoleillement = round(float(df_temp['radiation'][0]),1)
+
+
+        return temp,temp,pression,pression,humidity,humidity,vent,vent,pluie,ensoleillement
 
