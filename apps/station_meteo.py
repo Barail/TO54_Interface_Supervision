@@ -3,7 +3,6 @@ from dash import html
 from dash import dcc
 import dash_daq as daq
 import dash_leaflet as dl
-import dash_leaflet.express as dlx
 import dash_bootstrap_components as dbc
 import sqlite3
 import pandas as pd
@@ -26,8 +25,6 @@ theme = {
     'primary': '#00EA64',
     'secondary': '#6E6E6E',
 }
-
-fc_lab = dlx.dicts_to_geojson([dict(lat=47.642884, lon=6.845676)])
 
 card_gauge = dbc.Card([
     html.Div([
@@ -126,30 +123,21 @@ card_export_meteo_layout = dbc.Card([
                 fluid=True,
                 className="row justify-content-center pt-5",
             ),
-    ], style={'height':'30vh', 'marginTop':'25px', 'marginLeft':'10px'}
+    ], style={'height':'25vh', 'marginTop':'25px', 'marginLeft':'10px'}
 )
 
 card_map = dbc.Card([
-    dl.Map([dl.TileLayer(),
-            dl.LocateControl(id="parametre", options={'locateOptions': {'enableHighAccuracy': True}}, startDirectly=True),
-            dl.GeoJSON(data=fc_lab)],
-    id="map", zoom=10, style={'width': '100%', 'height': '50vh', 'margin': "auto", "display": "block"}),
+    dl.Map([dl.TileLayer(), dl.LocateControl(options={'locateOptions': {'enableHighAccuracy': True}}, startDirectly=True)],
+    id="map", style={'width': '100%', 'height': '50vh', 'margin': "auto", "display": "block"}),
 ], style={'height':'50vh', 'marginRight':'10px', 'marginTop':'20px'})
+            
+card_prevision = dbc.Card([
+], style={'height':'25vh', 'marginTop':'25px', 'marginLeft':'10px'})
 
 card_infomap = dbc.Card([
     html.H4("Informations géographiques", className='mt-3'),
-    html.Div(html.H1('Latitude : 47.642884 Longitude : 6.845676')),
-    html.Div([
-        html.Div([
-                dbc.Row(html.Img(src=app.get_asset_url('rain.png'), style={'height':'10vh', 'width':'10vh'})),
-                dbc.Row(daq.LEDDisplay(id='rain_led', label="taux de précipitation", value=0, color=theme['secondary'])),
-        ], className='four columns'),
-        html.Div([
-                dbc.Row(html.Img(src=app.get_asset_url('soleil.png'), style={'height':'10vh', 'width':'10vh'})),
-                dbc.Row(daq.LEDDisplay(id='sun_led', label="taux d'ensoleillement", value=0, color=theme['secondary'])),
-        ], className='four columns', style={"margin-left": "20px"}),
-    ], className='row align-self-center'),
-], style={'height':'30vh', 'marginTop':'25px', 'marginRight':'10px', 'textAlign':'center'})
+    html.Div(id="text")
+], style={'height':'25vh', 'marginTop':'25px', 'marginRight':'10px', 'textAlign':'center'})
                     
 
 meteo_layout = html.Div([
@@ -165,37 +153,6 @@ meteo_layout = html.Div([
             dbc.Col(card_infomap, width=4),
         ]
     )
-])
-
-welcome_meteo_layout = html.Div([
-        dbc.Row(
-            [
-                dbc.Col(
-                    [
-                        html.Div(
-                            [
-                                html.H2(
-                                    children='STATION METEO',
-                                    className="display-4 text-center text-white",
-                                ),
-                                html.Div(
-                                    children='Donnees de la puissance géneré par les panneaux',
-                                    className="display-5 text-center text-white",
-                                ),
-                            ],
-                            className="bg-info h-100 mr-3 ml-3 mt-3 p-5 border border-5 rounded rounded-3 border-dark ",
-                        ),
-                    ],
-                    md = 12,
-                ),
-            ],
-        ),
-    dbc.Row(
-        [
-            dbc.Col(card_gauge, width=8),
-            dbc.Col(card_map, width=4)
-        ]
-    ),
 ])
 
 @app.callback(
@@ -229,6 +186,15 @@ def export_data_to_csv(start_date, end_date, check_list_value, n_clicks):
         return dcc.send_data_frame(dff.to_csv, filename=export_data_file_name, index=False), 'data successfully saved'
     raise PreventUpdate
 
+                            
+@app.callback(
+    Output("text", "children"),
+    Input("map", "location_lat_lon_acc"),
+    prevent_initial_call=True
+)
+def update_location(location):
+    return "Latitude : {} Longitude : {}".format(location[0], location[1])    
+
 @app.callback(
     Output("temp_led", "value"),
     Output("daq_temp", "value"),
@@ -238,8 +204,6 @@ def export_data_to_csv(start_date, end_date, check_list_value, n_clicks):
     Output("daq_humi", "value"),
     Output("vent_led", "value"),
     Output("daq_vent", "value"),
-    Output("rain_led", "value"),
-    Output("sun_led", "value"),
     Input("data_update_temp", "n_intervals")
 )
 def gauge_temp(interval):
@@ -247,7 +211,7 @@ def gauge_temp(interval):
         raise PreventUpdate
     else:
         timestamp = 1630533600
-        statement = f"SELECT outTemp,pressure,outHumidity,windSpeed,rainRate,radiation FROM archive WHERE dateTime >= {timestamp}"
+        statement = f"SELECT outTemp,pressure,outHumidity,windSpeed FROM archive WHERE dateTime >= {timestamp}"
         #statement = f'SELECT outTemp FROM archive'
         df_temp = pd.read_sql_query(statement, conn_db)
         # print(df_temp)
@@ -256,9 +220,5 @@ def gauge_temp(interval):
         pression = round(float(df_temp['pressure'][0]),1)
         humidity = round(float(df_temp['outHumidity'][0]),1)
         vent = round(float(df_temp['windSpeed'][0]),1)
-        pluie = round(float(df_temp['rainRate'][0]),1)
-        ensoleillement = round(float(df_temp['radiation'][0]),1)
-
-
-        return temp,temp,pression,pression,humidity,humidity,vent,vent,pluie,ensoleillement
+        return temp,temp,pression,pression,humidity,humidity,vent,vent
 
