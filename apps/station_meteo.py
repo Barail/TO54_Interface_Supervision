@@ -66,7 +66,8 @@ card_gauge = dbc.Card([
             ),
         ]
     ),
-], style={'height':'50vh', 'marginLeft':'10px', 'marginTop':'20px'}),
+],className="bg-secondary h-100 p-3 ml-3 mt-4 border border-2 rounded rounded-3 border-dark", #style={'height':'50vh', 'marginLeft':'10px', 'marginTop':'20px'}
+),
 
 card_export_meteo_layout = dbc.Card([
             dbc.Container(
@@ -120,15 +121,16 @@ card_export_meteo_layout = dbc.Card([
                 fluid=True,
                 className="row justify-content-center pt-5",
             ),
-    ], style={'height':'30vh', 'marginTop':'25px', 'marginLeft':'10px'}
+    ], className="bg-secondary h-100 p-3 ml-3 mt-5 border border-2 rounded rounded-3 border-dark text-center`", #style={'height':'30vh', 'marginTop':'25px', 'marginLeft':'10px'}
 )
 
 card_map = dbc.Card([
     dl.Map([dl.TileLayer(),
             dl.LocateControl(id="parametre", options={'locateOptions': {'enableHighAccuracy': True}}, startDirectly=True),
             dl.GeoJSON(data=fc_lab)],
-    id="map", zoom=10, style={'width': '100%', 'height': '50vh', 'margin': "auto", "display": "block"}),
-], style={'height':'50vh', 'marginRight':'10px', 'marginTop':'20px'})
+    id="map", zoom=10, style={'width': '100%', 'height': '100%', 'margin': "auto", "display": "block"}),
+],  className="bg-secondary h-100 p-3 ml-3 mt-4 border border-2 rounded rounded-3 border-dark", #style={'height':'50vh', 'marginRight':'10px', 'marginTop':'20px'}
+)
 
 card_infomap = dbc.Card([
     html.H4("Informations géographiques", className='mt-3'),
@@ -143,7 +145,8 @@ card_infomap = dbc.Card([
                 dbc.Row(daq.LEDDisplay(id='sun_led', label="taux d'ensoleillement", value=0, color=theme['secondary'])),
         ], className='four columns', style={"margin-left": "20px"}),
     ], className='row align-self-center'),
-], style={'height':'30vh', 'marginTop':'25px', 'marginRight':'10px', 'textAlign':'center'})
+], className="bg-secondary h-100 p-3 ml-3 mt-5 border border-2 rounded rounded-3 border-dark text-center",#style={'height':'30vh', 'marginTop':'25px', 'marginRight':'10px', 'textAlign':'center'}
+)
                     
 
 meteo_layout = html.Div([
@@ -186,8 +189,13 @@ welcome_meteo_layout = html.Div([
         ),
     dbc.Row(
         [
-            dbc.Col(card_gauge, width=8),
-            dbc.Col(card_map, width=4)
+            dbc.Col(card_gauge, width=12,
+                            className="mr-3",),
+        ]
+    ),
+    dbc.Row(
+        [
+            dbc.Col(card_map, width=4,className="ml-3",)
         ]
     ),
 ])

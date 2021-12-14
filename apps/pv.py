@@ -24,9 +24,6 @@ GRAPH_INTERVAL = os.environ.get("GRAPH_INTERVAL", 1000)
 DB_FILE = pathlib.Path(__file__).parent.joinpath(DB_FILENAME).resolve()
 conn_db = sqlite3.connect(DB_FILE, check_same_thread=False)
 
-print(api_db_pv.get_min_time_in_db(conn_db))
-print(api_db_pv.get_max_time_in_db(conn_db))
-
 # Initialize table PV
 #statement = f'SELECT * FROM measurements'
 statement = f'SELECT * FROM measurements WHERE ROWID IN ( SELECT max( ROWID ) FROM measurements );'
@@ -82,8 +79,9 @@ pv_layout = html.Div(
                                         className='mt-5 dark-theme-control row justify-content-center'
                                     ),
                                     html.Div(
+                                    id='power_display_info',
                                     children='(recu a 10h39)',
-                                    className="display-5 text-center",
+                                    className="display-5 text-center mt-5",
                                 ),
                             ],
                             className="bg-secondary h-100 p-5 ml-3 mt-5 border border-2 rounded rounded-3 border-dark",
@@ -98,7 +96,8 @@ pv_layout = html.Div(
                                 dcc.Graph(
                                     id="plot_power_pv",
                                     config=dict(
-                                        displayModeBar=True,
+                                        showTips=False,
+                                        displayModeBar=False,
                                     ),
                                 ),
                                 dcc.Interval(
@@ -157,10 +156,8 @@ def export_data_to_csv(start_date, end_date, n_clicks):
     :params end_date: end date of the date-picker-range
     """
     if n_clicks > 0:
-        #statement = f'SELECT * FROM measurements WHERE time >= {start_date} AND time <= {end_date});'
-        statement = f'SELECT * FROM measurements '
+        statement = f'SELECT * FROM measurements WHERE strftime(\'%Y-%m-%d\', time) >= \'{start_date}\' AND strftime(\'%Y-%m-%d\', time) <= \'{end_date}\' ORDER BY time ASC'
         df = pd.read_sql_query(statement, conn_db)
-        print('test')
         dict = {'time':df['time'], 'PV_power':df['PV_power']}
         export_data_file_name='export_pv_from_'+str(start_date)+'_to_'+str(end_date)+'.csv'
         export_data=[]
@@ -177,6 +174,8 @@ def export_data_to_csv(start_date, end_date, n_clicks):
 # call back pv
 @app.callback(
     Output("plot_power_pv", "figure"),
+    Output("power_display", "value"),
+    Output("power_display_info", "children"),
     [Input("data_update_pv", "DatePickerRange")]
 )
 def gen_power_pv(intervals):
@@ -188,8 +187,12 @@ def gen_power_pv(intervals):
     #statement = f'SELECT * FROM measurements WHERE ROWID IN ( SELECT max( ROWID ) FROM measurements );'
     #statement = f"SELECT * FROM measurements WHERE time == datetime('now','-1 hours') ORDER BY time DESC LIMIT 200;"
     last_date_in_db = api_db_pv.get_max_time_in_db(conn_db)
-    statement = f"SELECT * FROM measurements WHERE strftime('%Y-%m-%d', time) >= {last_date_in_db} ORDER BY time ASC"
+    statement = f"SELECT * FROM measurements WHERE strftime(\'%Y-%m-%d\', time) >= \'{last_date_in_db}\' ORDER BY time ASC"
     df = pd.read_sql_query(statement, conn_db)
+
+    latest_pv_power_index = len(df['PV_power']) - 1
+    latest_pv_value = df['PV_power'][latest_pv_power_index]
+    latest_time = df['time'][latest_pv_power_index]
 
     trace1 = dict(
         type="scatter",
@@ -226,5 +229,5 @@ def gen_power_pv(intervals):
         },
     )
 
-    return dict(data=[trace1], layout=layout)
+    return dict(data=[trace1], layout=layout), latest_pv_value, f'reçu le {latest_time}'
 # end callback pv
