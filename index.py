@@ -19,7 +19,7 @@ app.layout = html.Div([
             children=[
                 dbc.NavItem(dbc.NavLink("Accueil", href='../')),
                 dbc.NavItem(dbc.NavLink("PV", href='/apps/pv')),
-                dbc.NavItem(dbc.NavLink("Batteries", href='/apps/batterie')),
+                dbc.NavItem(dbc.NavLink("Batteries", href='/apps/batteries')),
                 dbc.NavItem(dbc.NavLink("Station Meteo", href='/apps/station_meteo')),
             ],
             brand="Interface de Supervision - Batiment F",
@@ -36,7 +36,7 @@ welcome_layout = html.Div([
     # header
     dbc.Row([
         dbc.Col([html.Div(id='pv_content', children=[pv.pv_layout])],md=6),
-        dbc.Col([html.Div(id='station_meteo_content', children=[station_meteo.meteo_layout])],md=6),
+        dbc.Col([html.Div(id='station_meteo_content', children=[station_meteo.welcome_meteo_layout])],md=6),
     ]),
     dbc.Row([
         dbc.Col([html.Div(id='batteries_content', children=[])],md=12)

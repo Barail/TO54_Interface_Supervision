@@ -48,11 +48,11 @@ pv_layout = html.Div(
                         html.Div(
                             [
                                 html.H1(
-                                    children='Panneau photovoltaïque',
+                                    children='Panneaux photovoltaïques',
                                     className="display-4 text-center text-white",
                                 ),
                                 html.Div(
-                                    children='Donnees de la puissance géneré par les panneaux',
+                                    children='Données de la puissance génerée par les panneaux',
                                     className="display-5 text-center text-white",
                                 ),
                             ],
@@ -76,7 +76,7 @@ pv_layout = html.Div(
                                         label="",
                                         value=10000,
                                         color=theme['secondary'],
-                                        className='mt-5 dark-theme-control row justify-content-center'
+                                        className='mt-4 dark-theme-control row justify-content-center'
                                     ),
                                     html.Div(
                                     id='power_display_info',
@@ -84,7 +84,7 @@ pv_layout = html.Div(
                                     className="display-5 text-center mt-5",
                                 ),
                             ],
-                            className="bg-secondary h-100 p-5 ml-3 mt-5 border border-2 rounded rounded-3 border-dark",
+                            style={'height': '70vh'}, className="bg-secondary p-5 ml-3 mt-4 border border-2 rounded rounded-3 border-dark-grey",
                         ),
                     ],
                     md = 6,
@@ -121,21 +121,21 @@ pv_layout = html.Div(
                                         ),
                                         dcc.Download(id="download_csv"),
                                         dbc.Button('Export as csv', id='btn_export_csv', className='ml-5 btn btn-outline-success', n_clicks=0)
-                                    ], className="row justify-content-center mt-3",
+                                    ], className="row justify-content-center mt-5",
                                 ),
                                 html.Div(
                                     id='export_data_confirmation',
                                     children=[],
-                                    className="row justify-content-center mt-3 display-5 text-center",
+                                    className="row justify-content-center mt-5 display-5 text-center",
                                 ),
                             ],
-                            className="bg-secondary h-100 p-5 mr-3 mt-5 border border-5 rounded rounded-3 border-dark",
+                            style={'height': '70vh'}, className="bg-secondary p-5 mr-3 mt-4 border border-5 rounded rounded-3 border-dark-grey",
                         ),
                     ],
                     md = 6,
                 ),
             ],
-            style={'margin-bottom': 20},
+            style={'margin-bottom': 10},
         )
     ],
     className="app__container",
@@ -208,7 +208,7 @@ def gen_power_pv(intervals):
         paper_bgcolor="#FFF",
         font={"color": "#666"},
         margin=dict(l=30, r=0, b=45, t=43),
-        title=dict(text="Puissance genere sur la journee du", x=0.5),
+        title=dict(text="Puissance générée sur la journée du", x=0.5),
         xaxis={
             #"range": [0, 200],
             "showline": True,
